@@ -1,0 +1,522 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Deux grilles de 15 questions pour qualifier un projet de changement et son contexte, et choisir la stratégie de conduite du changement : déploiement, planification, consultation ou co-construction.">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;-webkit-font-smoothing:antialiased}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<title>Grilles Projet et Contexte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: questionnaire à gauche (deux grilles), panneau de résultat collant à droite ; une colonne sur mobile */
+:root{
+  --bg:#F3F5F7; --surface:#FFFFFF; --ink:#18232E; --muted:#5B6875; --line:#D9DFE5;
+  --accent:#1F5C73; --accent-soft:#E2EEF2;
+  --q-green:#2E8B57; --q-yellow:#D6A419; --q-orange:#E07B2A; --q-red:#C8423B;
+  --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11181F; --surface:#18222B; --ink:#E6ECF1; --muted:#9AA8B5; --line:#2C3A46;
+  --accent:#6FB6CF; --accent-soft:#1D3340;
+  --q-green:#4CB57B; --q-yellow:#E5BC3D; --q-orange:#F0954A; --q-red:#E2665E; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11181F; --surface:#18222B; --ink:#E6ECF1; --muted:#9AA8B5; --line:#2C3A46;
+  --accent:#6FB6CF; --accent-soft:#1D3340;
+  --q-green:#4CB57B; --q-yellow:#E5BC3D; --q-orange:#F0954A; --q-red:#E2665E; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5}
+.wrap{max-width:1240px;margin:0 auto;padding-inline:16px;padding-block:28px 64px}
+header.top{display:flex;flex-wrap:wrap;gap:16px 32px;align-items:flex-end;justify-content:space-between;margin-bottom:24px}
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(1.7rem,3.4vw,2.4rem);line-height:1.1;margin:0 0 6px;text-wrap:balance}
+.lead{color:var(--muted);margin:0;max-width:62ch}
+.proj{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1 1 280px;max-width:420px}
+.proj label{font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+.proj input{font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+button{font:inherit;cursor:pointer}
+.btn{border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:7px 14px;border-radius:8px;font-weight:600;font-size:.9rem}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.example-flag{font-size:.85rem;color:var(--accent);background:var(--accent-soft);padding:6px 10px;border-radius:6px;margin-top:8px;display:inline-block}
+
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:28px;align-items:start}
+@media (max-width:960px){.layout{grid-template-columns:minmax(0,1fr)}}
+
+.tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.tab{border:1px solid var(--line);background:var(--surface);color:var(--muted);padding:10px 16px;border-radius:999px;font-weight:600;display:flex;gap:10px;align-items:center}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tab .count{font-family:var(--f-mono);font-size:.78rem;opacity:.8}
+
+.grid-intro{color:var(--muted);margin:0 0 14px;font-size:.95rem}
+.bloc{margin-bottom:22px}
+.bloc h3{font-family:var(--f-display);font-weight:500;font-size:1.05rem;margin:0 0 10px;display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+.bloc h3 span{font-family:var(--f-mono);font-size:.8rem;color:var(--muted)}
+.q{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:10px}
+.q.unanswered{border-style:dashed}
+.q legend{font-weight:600;padding:0;margin-bottom:10px;display:flex;gap:10px}
+.q legend .n{font-family:var(--f-mono);font-size:.8rem;color:var(--accent);padding-top:3px;min-width:2.4em}
+.q fieldset{border:0;margin:0;padding:0;min-width:0}
+.opts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+@media (max-width:620px){.opts{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+.opt{position:relative}
+.opt input{position:absolute;opacity:0;inset:0;margin:0}
+.opt label{display:flex;flex-direction:column;gap:4px;height:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font-size:.88rem;line-height:1.3;cursor:pointer;color:var(--ink)}
+.opt label b{font-family:var(--f-mono);font-size:.72rem;font-weight:500;color:var(--muted)}
+.opt input:focus-visible + label{outline:2px solid var(--accent);outline-offset:2px}
+.opt input:checked + label{border-color:var(--c);box-shadow:inset 0 0 0 1px var(--c);background:color-mix(in srgb,var(--c) 12%,var(--surface))}
+.opt input:checked + label b{color:var(--c)}
+.opt.v1{--c:var(--q-red)} .opt.v2{--c:var(--q-orange)} .opt.v3{--c:var(--q-yellow)} .opt.v4{--c:var(--q-green)}
+
+aside.result{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);display:flex;flex-direction:column;gap:14px}
+@media (max-width:960px){aside.result{position:static}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px}
+.panel h2{font-family:var(--f-display);font-weight:500;font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 10px}
+.verdict{border-left:5px solid var(--vc,var(--line))}
+.verdict .title{font-family:var(--f-display);font-weight:700;font-size:1.35rem;line-height:1.15;margin:0 0 6px}
+.verdict p{margin:0 0 8px;font-size:.95rem}
+.verdict ul{margin:0;padding-left:18px;font-size:.92rem}
+.verdict .warn{font-size:.85rem;color:var(--muted);margin-top:8px}
+.scores{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.score .lab{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.score .val{font-family:var(--f-mono);font-size:1.5rem;font-variant-numeric:tabular-nums}
+.score .val small{font-size:.8rem;color:var(--muted)}
+.score .lvl{font-weight:700;font-size:.92rem}
+.sub{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.subrow{display:grid;grid-template-columns:minmax(0,1fr) 90px 44px;gap:8px;align-items:center;font-size:.82rem}
+.bar{height:6px;border-radius:3px;background:var(--line);position:relative;overflow:hidden}
+.bar i{position:absolute;inset:0 auto 0 0;border-radius:3px}
+.subrow .num{font-family:var(--f-mono);text-align:right;font-variant-numeric:tabular-nums;color:var(--muted)}
+svg text{font-family:var(--f-body)}
+.attn{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px;font-size:.88rem}
+.attn li{display:flex;gap:8px}
+.attn .tag{font-family:var(--f-mono);font-size:.72rem;padding:2px 6px;border-radius:4px;color:var(--surface);flex:none;height:fit-content}
+.foot{color:var(--muted);font-size:.85rem;margin-top:28px;max-width:75ch}
+.toast{font-size:.85rem;color:var(--q-green);min-height:1.2em}
+.strategies{margin-top:40px}
+h2.sec{font-family:var(--f-display);font-weight:700;font-size:1.5rem;margin:0 0 6px}
+.strat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+@media (max-width:760px){.strat-grid{grid-template-columns:minmax(0,1fr)}}
+.strat{background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--sc);border-radius:10px;padding:16px;font-size:.93rem;min-width:0}
+.strat.current{box-shadow:0 0 0 2px var(--sc)}
+.strat p{margin:0 0 8px}
+.strat ul{margin:0 0 8px;padding-left:18px}
+.strat-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.strat h3{font-family:var(--f-display);font-weight:700;font-size:1.25rem;margin:0;color:var(--sc)}
+.badge{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:3px 8px;border-radius:999px;background:var(--sc);color:var(--surface)}
+.pos{font-size:.8rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
+.lab2{font-weight:700;margin-bottom:4px!important}
+.risk{color:var(--muted)}
+.verdict a{color:var(--accent)}
+.costline{font-size:.88rem;margin-top:6px!important}
+.costline a{color:var(--accent);margin-left:6px}
+.tool-head{display:flex;flex-wrap:wrap;gap:12px 28px;justify-content:space-between;align-items:flex-end}
+.tool-head .grid-intro{max-width:70ch}
+.budget{display:flex;flex-direction:column;gap:4px;min-width:0}
+.budget label{font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+.budget input{font:inherit;font-family:var(--f-mono);padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);width:200px;max-width:100%}
+.cost-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:6px 0 16px}
+@media (max-width:760px){.cost-row{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.cost{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px;opacity:.6}
+.cost.on{opacity:1;box-shadow:0 0 0 2px var(--sc)}
+.cname{font-family:var(--f-display);font-weight:700;color:var(--sc)}
+.cbar{height:8px;border-radius:4px;background:var(--line);margin:8px 0;overflow:hidden}
+.cbar i{display:block;height:100%;background:var(--sc);border-radius:4px}
+.cnum{font-size:.85rem;font-variant-numeric:tabular-nums}
+.eur{font-family:var(--f-mono);font-size:.95rem;font-weight:500}
+.tool-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media (max-width:760px){.tool-grid{grid-template-columns:minmax(0,1fr)}}
+.tcol{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;min-width:0}
+.tcol h3{font-family:var(--f-display);font-weight:700;font-size:1.1rem;margin:0 0 10px;display:flex;justify-content:space-between}
+.tcol h3 span{font-family:var(--f-mono);font-size:.85rem;color:var(--muted)}
+.tcol ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px}
+.tcol li{display:flex;gap:8px;align-items:baseline;font-size:.93rem}
+.tcol li.new{font-weight:700}
+.chip{font-family:var(--f-mono);font-size:.72rem;padding:2px 6px;border-radius:4px;border:1px solid var(--line);color:var(--muted);flex:none;min-width:2.6em;text-align:center}
+.chip.new{background:var(--sc,var(--accent));border-color:var(--sc,var(--accent));color:var(--surface)}
+.legend{font-size:.82rem;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin-top:10px}
+.legend .chip{margin-left:6px}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div style="min-width:0;flex:1 1 420px">
+      <h1>Qualifier un changement : le projet et son contexte</h1>
+      <p class="lead">Deux grilles de 15 questions. La première dit si le projet est facile ou difficile, la seconde si le contexte est favorable ou défavorable. Le croisement des deux désigne l'une des quatre stratégies de conduite du changement : déploiement, planification, consultation ou co-construction.</p>
+      <span class="example-flag" id="exFlag">Exemple prérempli : projet de traçabilité par lot, Direction des Opérations de JNO</span>
+    </div>
+    <div class="proj">
+      <label for="projName">Projet évalué</label>
+      <input id="projName" type="text" placeholder="Nom du projet et périmètre">
+      <div class="toolbar">
+        <button class="btn" id="btnReset" type="button">Nouvelle évaluation</button>
+        <button class="btn" id="btnExample" type="button">Recharger l'exemple</button>
+        <button class="btn primary" id="btnCopy" type="button">Copier la synthèse</button>
+      </div>
+      <div class="toast" id="toast" aria-live="polite"></div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <main style="min-width:0">
+      <div class="tabs" role="tablist">
+        <button class="tab" role="tab" id="tab-projet" aria-selected="true" data-g="projet">Grille 1 · Le projet <span class="count" id="cnt-projet"></span></button>
+        <button class="tab" role="tab" id="tab-contexte" aria-selected="false" data-g="contexte">Grille 2 · Le contexte <span class="count" id="cnt-contexte"></span></button>
+      </div>
+      <section id="pane-projet" role="tabpanel" aria-labelledby="tab-projet"></section>
+      <section id="pane-contexte" role="tabpanel" aria-labelledby="tab-contexte" hidden></section>
+    </main>
+
+    <aside class="result">
+      <div class="panel">
+        <h2>Matrice projet × contexte</h2>
+        <svg id="matrix" viewBox="0 0 340 300" width="100%" role="img" aria-label="Position du projet dans la matrice"></svg>
+      </div>
+      <div class="panel verdict" id="verdict"></div>
+      <div class="panel">
+        <h2>Scores</h2>
+        <div class="scores" id="scores"></div>
+      </div>
+      <div class="panel">
+        <h2>Points d'attention</h2>
+        <ul class="attn" id="attn"></ul>
+      </div>
+    </aside>
+  </div>
+
+  <section id="outils" class="strategies">
+    <div class="tool-head">
+      <div style="min-width:0">
+        <h2 class="sec">Outils à réaliser</h2>
+        <p class="grid-intro" id="toolIntro"></p>
+      </div>
+      <div class="budget">
+        <label for="budget">Budget du projet (€)</label>
+        <input id="budget" type="number" min="0" step="10000" inputmode="numeric" placeholder="ex. 1 500 000">
+      </div>
+    </div>
+    <div class="cost-row" id="costRow"></div>
+    <div class="tool-grid" id="toolGrid"></div>
+    <p class="legend"><span class="chip new">O00</span> outil ajouté par cette stratégie <span class="chip">O00</span> outil hérité des stratégies plus légères</p>
+  </section>
+
+  <section id="strategies" class="strategies">
+    <h2 class="sec">Les quatre stratégies</h2>
+    <p class="grid-intro">Le contexte détermine si l'on peut imposer ou s'il faut associer ; le projet détermine si l'on peut aller vite ou s'il faut structurer.</p>
+    <div class="strat-grid" id="stratGrid"></div>
+  </section>
+
+  <p class="foot">Notation : chaque réponse vaut de 1 (facteur de difficulté fort) à 4 (facteur facilitant). Chaque grille est notée sur 60, le seuil de bascule est 38, soit une moyenne de 2,5 par question, le même seuil que la grille de capacité à changer du jumeau numérique organisationnel. Quatre niveaux par grille : 15 à 29, 30 à 37, 38 à 47, 48 à 60. Tant qu'une grille est incomplète, la position est calculée sur la moyenne des réponses données et signalée comme provisoire.</p>
+</div>
+
+<script>
+const GRIDS = {
+  projet: {
+    label: "Le projet", intro: "Ce que le changement exige en lui-même, indépendamment de l'organisation qui le reçoit.",
+    levels: ["Très difficile","Difficile","Plutôt facile","Facile"], prefix:"P",
+    blocs: [
+      {name:"Ampleur", qs:[
+        ["Quelle est la nature du changement ?", ["Transformation du métier ou de l'organisation","Refonte de processus transverses","Nouvel outil ou procédure locale","Ajustement de pratiques existantes"]],
+        ["Combien de personnes sont concernées ?", ["Plus de 500","100 à 500","20 à 100","Moins de 20"]],
+        ["Combien d'entités ou de métiers sont impactés ?", ["5 ou plus","3 ou 4","2","Un seul"]],
+        ["Quels effets sur les emplois et les postes ?", ["Suppressions ou mobilités contraintes","Postes redéfinis en profondeur","Tâches modifiées à la marge","Aucun effet sur les postes"]],
+        ["Quelles pertes les personnes perçoivent-elles (statut, autonomie, expertise) ?", ["Fortes et non compensées","Réelles mais négociables","Faibles","Aucune, ou gains nets"]]
+      ]},
+      {name:"Exigence", qs:[
+        ["Quel écart de compétences le projet crée-t-il ?", ["Un nouveau métier à apprendre","Formation lourde nécessaire","Formation courte suffisante","Compétences déjà présentes"]],
+        ["Quelle est la complexité technique ?", ["Nouveau SI intégré à plusieurs outils","Nouvel outil à paramétrer","Évolution d'un outil existant","Pas de composante technique"]],
+        ["Le délai imposé est-il tenable ?", ["Irréaliste au regard de l'ampleur","Tendu","Raisonnable","Libre ou confortable"]],
+        ["Le projet dépend-il d'autres projets ?", ["Conditionné par plusieurs projets en cours","Dépend d'un autre projet","Liens faibles","Autonome"]],
+        ["Le projet est-il nouveau pour l'entreprise ?", ["Inédit, sans référence externe","Inédit en interne, déjà fait ailleurs","Déjà fait sur un autre périmètre","Déjà réussi plusieurs fois"]]
+      ]},
+      {name:"Conduite", qs:[
+        ["Les objectifs sont-ils clairs ?", ["Flous ou contradictoires","Énoncés mais non chiffrés","Clairs, en partie mesurables","Clairs, chiffrés et partagés"]],
+        ["Quel bénéfice pour les utilisateurs ?", ["Aucun, voire une contrainte de plus","Indirect, visible par la direction seule","Réel mais différé","Immédiat et visible"]],
+        ["Peut-on expérimenter avant de généraliser ?", ["Bascule unique et irréversible","Pilote difficile à organiser","Pilote possible","Déploiement progressif et réversible"]],
+        ["Quelles ressources sont dédiées (budget, temps, équipe projet) ?", ["Aucune ressource dédiée","Insuffisantes","Suffisantes","Confortables, accompagnement compris"]],
+        ["Le projet a-t-il un sponsor ?", ["Pas de sponsor identifié","Sponsor nommé mais peu présent","Sponsor impliqué","Sponsor de haut niveau, visible et constant"]]
+      ]}
+    ]
+  },
+  contexte: {
+    label: "Le contexte", intro: "L'état de l'organisation qui reçoit le changement, quel que soit le projet.",
+    levels: ["Très défavorable","Défavorable","Plutôt favorable","Favorable"], prefix:"C",
+    blocs: [
+      {name:"Histoire et confiance", qs:[
+        ["Comment se sont passés les changements précédents ?", ["Échecs répétés, cynisme","Résultats mitigés","Plutôt réussis","Réussites reconnues et capitalisées"]],
+        ["Quelle confiance les salariés accordent-ils à la direction ?", ["Défiance installée","Confiance fragile","Confiance correcte","Confiance forte"]],
+        ["Quel est le climat social ?", ["Conflictuel","Tendu","Apaisé","Dialogue constructif"]],
+        ["Combien d'autres projets de changement sont en cours ?", ["Saturation, plus de 5","3 à 5","1 ou 2","Aucun autre"]],
+        ["L'équipe de direction est-elle stable ?", ["Changements répétés de dirigeants","Changement récent","Stable","Stable et alignée sur le projet"]]
+      ]},
+      {name:"Capacités", qs:[
+        ["Quelle est la charge de travail des équipes ?", ["Surcharge chronique","Forte","Normale","Marges disponibles"]],
+        ["Les managers savent-ils conduire un changement ?", ["Aucune compétence","Compétences faibles","Compétences correctes","Compétences éprouvées"]],
+        ["Existe-t-il des relais du changement ?", ["Aucun relais","Quelques volontaires isolés","Réseau en construction","Réseau actif et reconnu"]],
+        ["Quelle est la situation économique ?", ["Crise, survie en jeu","Fragile","Stable","Favorable, marges d'investissement"]],
+        ["Que valent les outils et le SI existants ?", ["Obsolètes, tâches manuelles","Vieillissants","Corrects","Modernes et intégrés"]]
+      ]},
+      {name:"Culture et engagement", qs:[
+        ["Le besoin de changer est-il perçu ?", ["Nié","Admis par la direction seule","Admis par une majorité","Partagé et réclamé"]],
+        ["Quelle place pour l'expérimentation ?", ["L'erreur est sanctionnée","La prudence est la règle","On essaie parfois","On teste et on apprend"]],
+        ["Quelle est la posture des managers de proximité ?", ["Opposés","Attentistes","Favorables","Moteurs"]],
+        ["Quel est le style de management ?", ["Directif et descendant","Consultatif sur la forme","Participatif","Coconstruction habituelle"]],
+        ["Quelle autonomie ont les équipes ?", ["Aucune marge de décision","Marges faibles","Marges réelles","Équipes autonomes"]]
+      ]}
+    ]
+  }
+};
+
+const EXAMPLE = {
+  name: "Traçabilité par lot, Direction des Opérations (JNO)",
+  projet:   [2,2,2,3,3, 2,2,2,3,3, 3,2,3,2,3],
+  contexte: [3,3,4,2,3, 1,2,2,3,1, 4,3,3,2,2]
+};
+
+const QUADS = {
+  "1-1": {t:"Déploiement", c:"--q-green", pos:"Contexte favorable · Projet facile",
+    d:"Le changement est simple et l'organisation est prête à le recevoir. On le diffuse directement, par la ligne managériale, sans dispositif lourd.",
+    logique:"Descendante et rapide : informer, former, déployer.",
+    a:["Annoncer le projet et son calendrier, puis déployer par vagues rapides","Confier la mise en œuvre aux managers de proximité avec un kit simple (supports, FAQ)","Former au plus près de l'usage, juste avant la bascule","Mesurer l'adoption et corriger les écarts au fil de l'eau"],
+    role:"Les managers relaient et animent ; l'équipe projet outille et suit.",
+    risque:"Sous-investir l'accompagnement : un projet facile peut échouer par négligence."},
+  "0-1": {t:"Planification", c:"--q-yellow", pos:"Contexte favorable · Projet difficile",
+    d:"L'organisation est prête mais le projet est complexe. La réussite dépend de la qualité de la structuration : découpage, séquencement, ressources.",
+    logique:"Méthodique et séquencée : planifier, tester, généraliser.",
+    a:["Découper le projet en lots avec jalons, livrables et responsables","Mettre en place une gouvernance : sponsor, comité de pilotage, équipe projet dédiée","Tester sur un pilote avant de généraliser","Bâtir un plan de formation et d'accompagnement calé sur le calendrier"],
+    role:"L'équipe projet porte la méthode ; les managers sont des relais de planning et de remontée d'information.",
+    risque:"Rigidité du plan : ne pas le réviser quand le terrain révèle des difficultés."},
+  "1-0": {t:"Consultation", c:"--q-orange", pos:"Contexte défavorable · Projet facile",
+    d:"Le projet est simple mais l'organisation n'y adhère pas. Le contenu est arrêté ; ce qui se discute, ce sont les modalités de mise en œuvre.",
+    logique:"Écouter avant de déployer : expliquer, recueillir, ajuster.",
+    a:["Expliquer le sens du projet : pourquoi, pour qui, ce qui ne change pas","Consulter les acteurs sur les modalités : ateliers, entretiens, questionnaires","Intégrer visiblement des retours et dire ce qui a été retenu ou non","Viser un premier succès rapide et s'appuyer sur les relais d'opinion"],
+    role:"Les managers animent la consultation et font remonter les irritants ; la direction répond et arbitre.",
+    risque:"Une consultation de façade : demander l'avis sans en tenir compte aggrave la défiance."},
+  "0-0": {t:"Co-construction", c:"--q-red", pos:"Contexte défavorable · Projet difficile",
+    d:"Le projet est complexe et l'organisation est réticente. Seule une solution conçue avec les acteurs a des chances d'être adoptée.",
+    logique:"Participative et itérative : concevoir avec, tester, ajuster.",
+    a:["Constituer des groupes de travail mixtes chargés de concevoir la solution","Fixer le cadre non négociable (objectifs, contraintes) et ouvrir le reste","Avancer par itérations courtes et réversibles sur un périmètre réduit","Traiter le contexte en parallèle : confiance, charge de travail, rôle des managers"],
+    role:"Les acteurs sont concepteurs ; les managers facilitent ; la direction garantit le cadre et tient ses engagements.",
+    risque:"Durée et épuisement : sans cadre ni échéances, la co-construction s'enlise."}
+};
+const QORDER=["0-1","0-0","1-1","1-0"];
+const LEVEL = {"1-1":0,"0-1":1,"1-0":2,"0-0":3};
+const COST = [{n:7,pct:3},{n:13,pct:6},{n:19,pct:10},{n:23,pct:15}];
+const LEVEL_KEYS = ["1-1","0-1","1-0","0-0"];
+const TOOLS = [
+  ["O1","Carto des changements","Diagnostic",0],["O2","Carto des acteurs","Diagnostic",1],["O3","Identification des risques","Diagnostic",0],
+  ["O4","Qualification / stratégie de changement","Diagnostic",0],["O5","Analyse des résistances (TCC)","Diagnostic",1],["O6","Marguerite sociologique","Diagnostic",3],
+  ["O7","Gestion des irritants","Diagnostic",2],["O8","Acteurs clés et sociogramme","Diagnostic",2],["O9","Impacts quantitatifs","Diagnostic",1],
+  ["O11","Impacts humains","Diagnostic",1],["O12","Impacts QVT","Diagnostic",3],
+  ["O10","Plan de transition","Leviers",0],["O13","Argumentaires et positionnement","Leviers",2],["O14","Pitch","Leviers",0],
+  ["O15","Mix com","Leviers",2],["O16","Plan de communication","Leviers",1],["O17","Plan de formation","Leviers",0],
+  ["O18","Formation des managers au changement","Leviers",3],["O19","Plan de portage","Leviers",1],["O20","Plan d'accompagnement – ateliers","Leviers",2],
+  ["O21","3 niveaux d'indicateurs","Pilotage",0],["O22","Baromètre ICAP","Pilotage",2],["O23","Enquête de verbatim","Pilotage",3]
+];
+const fmtEur = v => new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR",maximumFractionDigits:0}).format(v);
+function costText(lv){ const b=+state.budget||0; return b>0? fmtEur(b*COST[lv].pct/100) : null; }
+
+const state = { projet: Array(15).fill(null), contexte: Array(15).fill(null), name:"", budget:"", isExample:false };
+
+function save(){ try{ localStorage.setItem("grilles-chg", JSON.stringify(state)); }catch(e){} }
+function load(){ try{ const s = JSON.parse(localStorage.getItem("grilles-chg")); if(s && s.projet && s.contexte){ Object.assign(state,s); return true;} }catch(e){} return false; }
+function loadExample(){ state.projet=[...EXAMPLE.projet]; state.contexte=[...EXAMPLE.contexte]; state.name=EXAMPLE.name; state.isExample=true; }
+
+function buildPane(key){
+  const g = GRIDS[key]; const pane = document.getElementById("pane-"+key);
+  let i = 0, html = `<p class="grid-intro">${g.intro}</p>`;
+  g.blocs.forEach((b,bi)=>{
+    html += `<div class="bloc"><h3>${b.name} <span id="sub-${key}-${bi}"></span></h3>`;
+    b.qs.forEach(([q,opts])=>{
+      const idx=i++, id=`${g.prefix}${idx+1}`;
+      html += `<div class="q" id="q-${key}-${idx}"><fieldset><legend><span class="n">${id}</span><span>${q}</span></legend><div class="opts">`;
+      opts.forEach((o,oi)=>{
+        const v=oi+1, rid=`${key}-${idx}-${v}`;
+        html += `<div class="opt v${v}"><input type="radio" name="${key}-${idx}" id="${rid}" value="${v}"><label for="${rid}"><b>${v}</b>${o}</label></div>`;
+      });
+      html += `</div></fieldset></div>`;
+    });
+    html += `</div>`;
+  });
+  pane.innerHTML = html;
+  pane.addEventListener("change", e=>{
+    const [k,idx] = e.target.name.split("-"); state[k][+idx] = +e.target.value;
+    state.isExample=false; save(); render();
+  });
+}
+
+function syncInputs(){
+  ["projet","contexte"].forEach(k=>state[k].forEach((v,i)=>{
+    document.querySelectorAll(`input[name="${k}-${i}"]`).forEach(r=>r.checked = (+r.value===v));
+  }));
+  document.getElementById("projName").value = state.name||"";
+  document.getElementById("budget").value = state.budget||"";
+}
+
+function stats(key){
+  const a = state[key].filter(v=>v!=null);
+  const n = a.length, sum = a.reduce((s,v)=>s+v,0);
+  const avg = n? sum/n : null;
+  const est = avg!=null ? Math.round(avg*15) : null; // score sur 60 (extrapolé si incomplet)
+  let lvl = null;
+  if(est!=null) lvl = est<30?0: est<38?1: est<48?2:3;
+  const subs = [0,1,2].map(b=>{ const s=state[key].slice(b*5,b*5+5).filter(v=>v!=null); return s.length? {sum:s.reduce((x,y)=>x+y,0), n:s.length, avg:s.reduce((x,y)=>x+y,0)/s.length}:null; });
+  return {n, sum, avg, est, lvl, subs, complete:n===15};
+}
+
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const lvlColor = l => ["--q-red","--q-orange","--q-yellow","--q-green"][l];
+
+function render(){
+  const P = stats("projet"), C = stats("contexte");
+  document.getElementById("cnt-projet").textContent = `${P.n}/15`;
+  document.getElementById("cnt-contexte").textContent = `${C.n}/15`;
+  document.getElementById("exFlag").hidden = !state.isExample;
+  ["projet","contexte"].forEach(k=>{
+    const S = k==="projet"?P:C;
+    state[k].forEach((v,i)=>document.getElementById(`q-${k}-${i}`).classList.toggle("unanswered", v==null));
+    S.subs.forEach((s,b)=>document.getElementById(`sub-${k}-${b}`).textContent = s? `${s.sum}/${s.n*4}` : "");
+  });
+  drawMatrix(P,C); drawVerdict(P,C); drawScores(P,C); drawAttn(); drawStrategies(P,C); drawTools(P,C);
+}
+
+function drawMatrix(P,C){
+  const svg = document.getElementById("matrix");
+  const L=50,T=14,W=270,H=230; const x = a=>L+(4-a)/3*W, y = a=>T+(a-1)/3*H; // origine en bas à gauche : favorable et facile
+  const q = (x0,y0,w,h,col,label)=>`<rect x="${x0}" y="${y0}" width="${w}" height="${h}" fill="${css(col)}" fill-opacity=".16"/><text x="${x0+w/2}" y="${y0+h/2}" text-anchor="middle" font-size="11.5" font-weight="700" fill="${css(col)}">${label}</text>`;
+  const mx=x(2.5), my=y(2.5);
+  let s = q(L,T,mx-L,my-T,"--q-yellow","Planification")
+        + q(mx,T,L+W-mx,my-T,"--q-red","Co-construction")
+        + q(L,my,mx-L,T+H-my,"--q-green","Déploiement")
+        + q(mx,my,L+W-mx,T+H-my,"--q-orange","Consultation");
+  s += `<line x1="${mx}" y1="${T}" x2="${mx}" y2="${T+H}" stroke="${css("--muted")}" stroke-dasharray="3 3"/><line x1="${L}" y1="${my}" x2="${L+W}" y2="${my}" stroke="${css("--muted")}" stroke-dasharray="3 3"/>`;
+  s += `<rect x="${L}" y="${T}" width="${W}" height="${H}" fill="none" stroke="${css("--line")}"/>`;
+  s += `<text x="${L}" y="${T+H+18}" font-size="11" fill="${css("--muted")}">Favorable</text><text x="${L+W}" y="${T+H+18}" text-anchor="end" font-size="11" fill="${css("--muted")}">Défavorable</text><text x="${L+W/2}" y="${T+H+34}" text-anchor="middle" font-size="11.5" font-weight="700" fill="${css("--ink")}">Contexte</text>`;
+  s += `<text x="${L-8}" y="${T+10}" text-anchor="end" font-size="11" fill="${css("--muted")}">Difficile</text><text x="${L-8}" y="${T+H}" text-anchor="end" font-size="11" fill="${css("--muted")}">Facile</text><text transform="translate(14 ${T+H/2}) rotate(-90)" text-anchor="middle" font-size="11.5" font-weight="700" fill="${css("--ink")}">Projet</text>`;
+  if(P.avg!=null && C.avg!=null){
+    const px=x(C.avg), py=y(P.avg), prov=!(P.complete&&C.complete);
+    s += `<circle cx="${px}" cy="${py}" r="9" fill="${css("--ink")}" ${prov?'fill-opacity=".45"':''} stroke="${css("--surface")}" stroke-width="2"/>`;
+  }
+  svg.innerHTML = s;
+}
+
+function quadKey(P,C){ return `${P.avg>=2.5?1:0}-${C.avg>=2.5?1:0}`; }
+
+function drawVerdict(P,C){
+  const el = document.getElementById("verdict");
+  if(P.avg==null || C.avg==null){ el.style.setProperty("--vc","var(--line)"); el.innerHTML = `<h2>Stratégie recommandée</h2><p class="title">En attente</p><p>Répondez à au moins une question dans chaque grille pour positionner le projet.</p>`; return; }
+  const Q = QUADS[quadKey(P,C)];
+  el.style.setProperty("--vc", `var(${Q.c})`);
+  const prov = !(P.complete&&C.complete);
+  el.innerHTML = `<h2>Stratégie recommandée</h2><p class="title">${Q.t}</p><p class="pos">${Q.pos}</p><p>${Q.d}</p><p><b>Logique :</b> ${Q.logique}</p><p class="costline"><b>${COST[LEVEL[quadKey(P,C)]].n} livrables · ${COST[LEVEL[quadKey(P,C)]].pct} % du coût du projet</b>${costText(LEVEL[quadKey(P,C)])?` · ${costText(LEVEL[quadKey(P,C)])}`:""} <a href="#outils">Voir les outils</a></p>`
+    + (prov? `<p class="warn">Provisoire : ${30-P.n-C.n} question(s) sans réponse.</p>`:"")
+    + ((Math.abs(P.avg-2.5)<.1 || Math.abs(C.avg-2.5)<.1) && !prov ? `<p class="warn">Position proche du seuil : une ou deux réponses peuvent faire basculer vers une autre stratégie.</p>`:"")
+    + `<p class="warn"><a href="#strategies">Voir le détail des quatre stratégies</a></p>`;
+}
+
+function drawStrategies(P,C){
+  const cur = (P.avg!=null && C.avg!=null)? quadKey(P,C) : null;
+  document.getElementById("stratGrid").innerHTML = QORDER.map(k=>{ const Q=QUADS[k];
+    return `<article class="strat${k===cur?" current":""}" style="--sc:var(${Q.c})">
+      <div class="strat-head"><h3>${Q.t}</h3>${k===cur?'<span class="badge">Recommandée</span>':""}</div>
+      <p class="pos">${Q.pos}</p><p>${Q.d}</p>
+      <p><b>Logique :</b> ${Q.logique}</p>
+      <p class="lab2">Actions</p><ul>${Q.a.map(x=>`<li>${x}</li>`).join("")}</ul>
+      <p><b>Rôles :</b> ${Q.role}</p>
+      <p class="risk"><b>Risque :</b> ${Q.risque}</p><p class="costline"><b>${COST[LEVEL[k]].n} livrables · ${COST[LEVEL[k]].pct} % du coût du projet</b></p></article>`; }).join("");
+}
+
+function drawTools(P,C){
+  const ready = P.avg!=null && C.avg!=null;
+  const key = ready? quadKey(P,C) : null, lv = ready? LEVEL[key] : null;
+  const intro = document.getElementById("toolIntro");
+  intro.textContent = ready
+    ? `Stratégie de ${QUADS[key].t.toLowerCase()} : ${COST[lv].n} livrables, soit ${COST[lv].pct} % du coût du projet. Les outils s'additionnent d'une stratégie à l'autre, de la plus légère (déploiement) à la plus complète (co-construction).`
+    : "Répondez aux grilles pour obtenir la liste des outils.";
+  document.getElementById("costRow").innerHTML = LEVEL_KEYS.map((k,i)=>{ const Q=QUADS[k], ct=costText(i);
+    return `<div class="cost${i===lv?" on":""}" style="--sc:var(${Q.c})"><div class="cname">${Q.t}</div>
+      <div class="cbar"><i style="width:${COST[i].pct/15*100}%"></i></div>
+      <div class="cnum"><b>${COST[i].pct} %</b> du coût · ${COST[i].n} livrables${ct?`<br><span class="eur">${ct}</span>`:""}</div></div>`; }).join("");
+  const cats=["Diagnostic","Leviers","Pilotage"];
+  document.getElementById("toolGrid").innerHTML = !ready? "" : cats.map(c=>{
+    const list = TOOLS.filter(t=>t[2]===c && t[3]<=lv).sort((a,b)=>+a[0].slice(1)-+b[0].slice(1));
+    return `<div class="tcol"><h3>${c} <span>${list.length}</span></h3><ul>${list.map(t=>`<li class="${t[3]===lv?"new":""}"><span class="chip${t[3]===lv?" new":""}">${t[0]}</span>${t[1]}</li>`).join("")}</ul></div>`; }).join("");
+  document.getElementById("outils").style.setProperty("--sc", ready? `var(${QUADS[key].c})` : "var(--line)");
+}
+
+function drawScores(P,C){
+  const box = document.getElementById("scores");
+  const one = (k,S)=>{
+    const g = GRIDS[k];
+    const lvlTxt = S.lvl!=null? g.levels[S.lvl] : "—";
+    const col = S.lvl!=null? `var(${lvlColor(S.lvl)})` : "var(--muted)";
+    const subs = g.blocs.map((b,i)=>{ const s=S.subs[i]; const pct = s? (s.avg-1)/3*100 : 0; const c = s? `var(${lvlColor(s.avg<1.75?0:s.avg<2.5?1:s.avg<3.25?2:3)})`:"var(--line)";
+      return `<div class="subrow"><span>${b.name}</span><span class="bar"><i style="width:${pct}%;background:${c}"></i></span><span class="num">${s? (s.avg*5).toFixed(0)+"/20":"—"}</span></div>`; }).join("");
+    return `<div class="score"><div class="lab">${g.label}</div><div class="val">${S.est??"—"}<small>/60</small></div><div class="lvl" style="color:${col}">${lvlTxt}</div></div>`
+      + `<div class="sub" style="grid-column:1/-1">${subs}</div>`;
+  };
+  const pS = one("projet",P).split('<div class="sub"'), cS = one("contexte",C).split('<div class="sub"');
+  box.innerHTML = pS[0] + cS[0]
+    + `<div style="grid-column:1/-1;font-size:.78rem;color:var(--muted);margin-top:6px">Projet par bloc</div><div class="sub"` + pS[1]
+    + `<div style="grid-column:1/-1;font-size:.78rem;color:var(--muted);margin-top:6px">Contexte par bloc</div><div class="sub"` + cS[1];
+}
+
+function drawAttn(){
+  const items = [];
+  ["projet","contexte"].forEach(k=>{
+    const g=GRIDS[k]; let i=0;
+    g.blocs.forEach(b=>b.qs.forEach(([q,opts])=>{ const v=state[k][i]; if(v!=null && v<=2) items.push({id:g.prefix+(i+1), q, a:opts[v-1], v}); i++; }));
+  });
+  items.sort((a,b)=>a.v-b.v);
+  const ul = document.getElementById("attn");
+  if(!items.length){ ul.innerHTML = `<li style="color:var(--muted)">Aucune réponse notée 1 ou 2 pour l'instant.</li>`; return; }
+  ul.innerHTML = items.slice(0,8).map(x=>`<li><span class="tag" style="background:var(${x.v===1?"--q-red":"--q-orange"})">${x.id}</span><span>${x.q} <span style="color:var(--muted)">${x.a}</span></span></li>`).join("")
+    + (items.length>8? `<li style="color:var(--muted)">et ${items.length-8} autre(s) réponse(s) notée(s) 2.</li>`:"");
+}
+
+function summary(){
+  const P=stats("projet"), C=stats("contexte");
+  if(P.avg==null||C.avg==null) return "Évaluation incomplète.";
+  const Q=QUADS[quadKey(P,C)];
+  const lines=[`Projet : ${state.name||"(sans nom)"}`,
+    `Grille projet : ${P.est}/60 — ${GRIDS.projet.levels[P.lvl]}${P.complete?"":" (provisoire)"}`,
+    `Grille contexte : ${C.est}/60 — ${GRIDS.contexte.levels[C.lvl]}${C.complete?"":" (provisoire)"}`,
+    `Stratégie recommandée : ${Q.t} (${Q.pos})`, Q.d, `Logique : ${Q.logique}`, "Actions :", ...Q.a.map(a=>"- "+a), `Rôles : ${Q.role}`, `Risque : ${Q.risque}`]; const lv=LEVEL[quadKey(P,C)]; lines.push(`Outils à réaliser : ${COST[lv].n} livrables, ${COST[lv].pct} % du coût du projet${costText(lv)?" ("+costText(lv)+")":""}`); ["Diagnostic","Leviers","Pilotage"].forEach(c=>lines.push(`${c} : `+TOOLS.filter(t=>t[2]===c&&t[3]<=lv).sort((a,b)=>+a[0].slice(1)-+b[0].slice(1)).map(t=>t[0]+" "+t[1]).join(", ")));
+  const att=[]; ["projet","contexte"].forEach(k=>{let i=0;GRIDS[k].blocs.forEach(b=>b.qs.forEach(([q,o])=>{const v=state[k][i]; if(v===1) att.push(`- ${GRIDS[k].prefix}${i+1} ${q} → ${o[0]}`); i++;}));});
+  if(att.length) lines.push("Freins majeurs :",...att);
+  return lines.join("\n");
+}
+
+function toast(t){ const el=document.getElementById("toast"); el.textContent=t; setTimeout(()=>{el.textContent=""},2500); }
+
+document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>{
+  document.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected", x===t?"true":"false"));
+  ["projet","contexte"].forEach(k=>document.getElementById("pane-"+k).hidden = (k!==t.dataset.g));
+}));
+document.getElementById("budget").addEventListener("input",e=>{state.budget=e.target.value; save(); render();});
+document.getElementById("projName").addEventListener("input",e=>{state.name=e.target.value; state.isExample=false; save(); render();});
+document.getElementById("btnReset").addEventListener("click",()=>{ state.projet=Array(15).fill(null); state.contexte=Array(15).fill(null); state.name=""; state.isExample=false; save(); syncInputs(); render(); toast("Grilles vidées"); });
+document.getElementById("btnExample").addEventListener("click",()=>{ loadExample(); save(); syncInputs(); render(); toast("Exemple rechargé"); });
+document.getElementById("btnCopy").addEventListener("click",()=>{
+  const txt=summary();
+  if(navigator.clipboard){ navigator.clipboard.writeText(txt).then(()=>toast("Synthèse copiée"),()=>toast("Copie refusée par le navigateur")); } else toast("Copie indisponible");
+});
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change",render);
+new MutationObserver(render).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+
+buildPane("projet"); buildPane("contexte");
+if(!load()) loadExample();
+syncInputs(); render();
+</script>
+
+</body>
+</html>
